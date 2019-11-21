@@ -1,0 +1,2 @@
+paver test
+paver clean
