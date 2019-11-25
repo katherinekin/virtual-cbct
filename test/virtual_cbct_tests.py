@@ -20,11 +20,12 @@ class VirtualCbctTest(unittest.TestCase):
 		pm.get_phantom_jpg(pm.generate_phantom())
 		self.assertTrue(path.exists("./phantom.jpg"))
 
-	def test_get_x_ray_graph(self):
-		sensor_resolution = 64
-		i_0 = 40	# keV
-		U = pm.get_attenuations()
-		cbct.show_graphs(cbct.get_x_ray(sensor_resolution, i_0, U))
+	# def test_get_x_ray_graph(self):
+	# 	sensor_resolution = 64
+	# 	i_0 = 40	# keV
+	# 	U = pm.get_attenuations()
+	# 	cbct.show_graphs(cbct.get_x_ray(sensor_resolution, i_0, U))
+
 
 if __name__ == '__main__':
 	unittest.main()
