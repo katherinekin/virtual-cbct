@@ -9,15 +9,10 @@ import matplotlib.pyplot as plt
 
 xPixels = yPixels = 512
 zPixels = 512
-cmPerPixel = 10
 
 def get_attenuations():
 	# phantom = np.zeros((yPixels, xPixels), np.uint8) # phantom image
 	U = np.zeros((yPixels, xPixels), np.float32) # attenuation matrix
-	L = np.ones((yPixels, xPixels), np.float32) # length matrix
-
-	# TODO: may just use this as a conversion factor, no need for matrix
-	L = L * cmPerPixel / xPixels # how many cm per pixel
 
 	struct_1 = np.zeros((yPixels, xPixels), np.float32)
 	struct_1[int(yPixels * 0.25): int(yPixels * 0.25) + 256, 
