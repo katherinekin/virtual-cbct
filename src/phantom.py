@@ -7,28 +7,44 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-def generate_phantom():
-	widthPixels = heightPixels = 512
-	heightPixels = 512
-	cmPerPixel = 10
+xPixels = yPixels = 512
+zPixels = 512
+cmPerPixel = 10
 
-	phantom = np.zeros((heightPixels, widthPixels), np.uint8) # phantom image
-	U = np.zeros((heightPixels, widthPixels), np.float32) # attenuation matrix
-	L = np.ones((heightPixels, widthPixels), np.float32) # length matrix
+def get_attenuations():
+	# phantom = np.zeros((yPixels, xPixels), np.uint8) # phantom image
+	U = np.zeros((yPixels, xPixels), np.float32) # attenuation matrix
+	L = np.ones((yPixels, xPixels), np.float32) # length matrix
 
 	# TODO: may just use this as a conversion factor, no need for matrix
-	L = L * cmPerPixel / widthPixels # how many cm per pixel
+	L = L * cmPerPixel / xPixels # how many cm per pixel
 
-	struct_1 = np.zeros((heightPixels, widthPixels), np.float32)
-	struct_1[int(heightPixels*0.1): int(heightPixels * 0.1) * 2, 
-			int(widthPixels * 0.3): int(widthPixels * 0.3) + int(widthPixels * 0.1)] = 1
-	attenuation_1 = 0.2
+	struct_1 = np.zeros((yPixels, xPixels), np.float32)
+	struct_1[int(yPixels * 0.25): int(yPixels * 0.25) + 256, 
+			int(xPixels * 0.25): int(xPixels * 0.25) + 256] = 1
+	attenuation_1 = 0.6
 
-	phantom += struct_1.astype(np.uint8)        
-	U += struct_1 * attenuation_1
-	phantom *= 255
+	# TODO: thickness can be passed as an argument
+	thickness = 20
 
-	return phantom, U, L
+	struct_2 = np.zeros((yPixels, xPixels), np.float32)
+	struct_2[int(yPixels * 0.25) + thickness: int(yPixels * 0.25) + 256 - thickness, 
+			int(xPixels * 0.25) + thickness: int(xPixels * 0.25) + 256 - thickness] = 1
+	attenuation_2 = 0.2
+
+	# phantom += struct_1.astype(np.uint8)        
+	U = U + struct_1 * attenuation_1 + struct_2 * attenuation_2 - struct_2 * attenuation_1
+
+	return U
+
+def generate_phantom():
+	phantom = np.zeros((yPixels, xPixels), np.uint8) # phantom image
+	return get_attenuations() * 255
 
 def get_phantom_jpg(phantom):
-	cv2.imwrite("phantom.jpg", phantom)
+	cv2.imwrite("phantom.jpg", normalize_image(phantom))
+
+def normalize_image(phantom):
+	min_val = np.min(phantom)
+	max_val = np.max(phantom)
+	return (phantom - min_val)*(255/(max_val-min_val))
