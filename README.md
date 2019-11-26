@@ -1,9 +1,13 @@
-## virtual-cbct
+# virtual-cbct
 
-# Instructions
+## Dependencies
 
-Please install the paver build tool with
+This project uses astra-toolbox to simulate cone beam CT. Dependencies for this project include numpy, scipy, opencv-python, matplotlib, imageio, and an NVIDIA GPU and CUDA (at least 5.5). Please install astra-toolbox following the directions on the associated github page. Paver is required to run the build tool and unittests. Creating a virtual environment with the dependencies is recommended.
 ```
-pip3 install Paver
+pip install paver
+pip install numpy
+pip install opencv-python
+pip install matplotlib
+pip install scipy
+pip install imageio
 ```
-Dependencies for this project include numpy, opencv-python, and matplotlib. Please ensure that the default directory location for python package installations has appropriate permissions.
