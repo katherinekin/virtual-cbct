@@ -12,56 +12,50 @@ class Application(tk.Frame):
 		self.createWidgets()
 
 	def createWidgets(self):
-		#Label at top of window
-		label = tk.Label(
+		#Title of application
+		title = tk.Label(
 			self.table, text = "Welcome to virtual-cbct\n\n",
 			font=LARGE_FONT, justify='center')
+		title.grid(padx = 5)
 
-		label.grid(padx = 5, row = 0)
+		parameters = [
+			("Distance to x-ray source (mm)", 300),
+			("Distance to x-ray detector (mm)", 100),
+			("Detector pixel size (mm)", 1.05),
+			("Detector rows", 200),
+			("Detector columns", 200),
+			("Number of projections", 180)
+		]
 
-		#items in textboxFrame (column at left side)
-		textboxFrame = tk.Frame(self.table)
+		rowcount = 1
 
-		label2 = tk.Label(textboxFrame, text = "Change input information for virtual-cbct",
-		                  font = 6)
-		label2.grid()
+		for parameter in parameters:
+			tk.Label(self.table, text = parameter[0]).grid(row = rowcount, column = 0)
+			entry = tk.Entry(self.table)
+			entry.insert(tk.END, parameter[1])
+			entry.grid(row = rowcount, column = 1)
+			rowcount += 1
 
-		self.e = tkst.ScrolledText(textboxFrame, width=70, height=20, undo=True)
-		self.e.grid()
-
-		#items in buttonFrame (column at right side)
 		buttonFrame = tk.Frame(self.table)
+		#RESET button to delete the table
+		self.resetButton = ttk.Button(buttonFrame, text = "RESET")
+		self.resetButton["command"] = self.resetTable
+		self.resetButton.grid(row = 0, column = 0)
 
 		#SUBMIT button will remove newLines and populate motifList
-		self.sButtonPressed = False
-		self.sButton = ttk.Button(buttonFrame, text = "SUBMIT")
-		self.sButton["command"] = self.submitReq
-		self.sButton.grid(column=1)
+		self.submitButton = ttk.Button(buttonFrame, text = "SUBMIT")
+		self.submitButton["command"] = self.submitReq
+		self.submitButton.grid(row = 0, column = 1)
 
-		#Display button to display info about motifs
-		self.displayButton = ttk.Button(buttonFrame, text = "DISPLAY")
-		self.displayButton["command"] = self.displayStats
-		self.displayButton.grid(column=1)
-
-		#Clear button to delete the table
-		self.deleteButton = ttk.Button(buttonFrame, text = "DELETE")
-		self.deleteButton["command"] = self.deleteTable
-		self.deleteButton.grid(column=1)
-
-		#Grid manager
-		textboxFrame.grid(padx=10, column=0, row=1)
-		buttonFrame.grid(column=1, row=1)
+		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
 
 		self.pack(expand = True)  #Not sure if this is needed
         
 	def submitReq(self):
 	  print("submitReq called")
 
-	def displayStats(self):
-		print("displayStats called")
-
-	def deleteTable(self):
-		print("deleteTable called")    
+	def resetTable(self):
+		print("resetTable called")    
 
 	def formatGUI(self):
 
@@ -80,3 +74,8 @@ class Application(tk.Frame):
 
 	def onFrameConfigure(self, event):
 		self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+
+# Change attenuation coefficients of generated shape
+# Change resolution of cbct
+# Change speed? of cbct\
