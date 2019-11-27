@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.scrolledtext as tkst
+# import astra_cbct as cbct
 
 LARGE_FONT = ("Verdana", 14)
 
@@ -28,12 +29,13 @@ class Application(tk.Frame):
 		]
 
 		rowcount = 1
-
+		self.entries = {} # Hash each entry element by field name
 		for parameter in parameters:
 			tk.Label(self.table, text = parameter[0]).grid(row = rowcount, column = 0)
 			entry = tk.Entry(self.table)
 			entry.insert(tk.END, parameter[1])
 			entry.grid(row = rowcount, column = 1)
+			self.entries[parameter[0]] = entry
 			rowcount += 1
 
 		buttonFrame = tk.Frame(self.table)
@@ -42,17 +44,19 @@ class Application(tk.Frame):
 		self.resetButton["command"] = self.resetTable
 		self.resetButton.grid(row = 0, column = 0)
 
-		#SUBMIT button will remove newLines and populate motifList
+		#SUBMIT button to run cbct
 		self.submitButton = ttk.Button(buttonFrame, text = "SUBMIT")
 		self.submitButton["command"] = self.submitReq
 		self.submitButton.grid(row = 0, column = 1)
 
 		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
-
-		self.pack(expand = True)  #Not sure if this is needed
         
 	def submitReq(self):
 	  print("submitReq called")
+	  # create astra-cbct
+	  # set attributes using form entries
+	  for entry in self.entries:
+	  	print(self.entries[entry].get())
 
 	def resetTable(self):
 		print("resetTable called")    
@@ -62,20 +66,15 @@ class Application(tk.Frame):
 		self.canvas = tk.Canvas(self , width = 700, height=500)
 		#table is the frame object in canvas to populate with widgets
 		self.table = tk.Frame(self.canvas)
-		self.vbar = tk.Scrollbar(self,orient="vertical")
-		self.canvas.config(yscrollcommand=self.vbar.set)
+		self.vbar = tk.Scrollbar(self,orient = "vertical")
+		self.canvas.config(yscrollcommand = self.vbar.set)
 
-		self.vbar.pack(side="right",fill=tk.Y)
-		self.vbar.config(command=self.canvas.yview)
-		self.canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+		self.vbar.pack(side = "right",fill = tk.Y)
+		self.vbar.config(command = self.canvas.yview)
+		self.canvas.pack(side = tk.TOP, fill = tk.BOTH, expand=True)
 
-		self.canvas.create_window(0,0, anchor="nw", window = self.table, tags="self.table")
+		self.canvas.create_window(0,0, anchor = "nw", window = self.table, tags="self.table")
 		self.table.bind("<Configure>", self.onFrameConfigure)
 
 	def onFrameConfigure(self, event):
-		self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-
-
-# Change attenuation coefficients of generated shape
-# Change resolution of cbct
-# Change speed? of cbct\
+		self.canvas.configure(scrollregion = self.canvas.bbox("all"))
