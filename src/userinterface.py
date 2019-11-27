@@ -19,7 +19,7 @@ class Application(tk.Frame):
 			font=LARGE_FONT, justify='center')
 		title.grid(padx = 5)
 
-		parameters = [
+		self.parameters = [
 			("Distance to x-ray source (mm)", 300),
 			("Distance to x-ray detector (mm)", 100),
 			("Detector pixel size (mm)", 1.05),
@@ -30,7 +30,7 @@ class Application(tk.Frame):
 
 		rowcount = 1
 		self.entries = {} # Hash each entry element by field name
-		for parameter in parameters:
+		for parameter in self.parameters:
 			tk.Label(self.table, text = parameter[0]).grid(row = rowcount, column = 0)
 			entry = tk.Entry(self.table)
 			entry.insert(tk.END, parameter[1])
@@ -52,14 +52,15 @@ class Application(tk.Frame):
 		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
         
 	def submitReq(self):
-	  print("submitReq called")
 	  # create astra-cbct
 	  # set attributes using form entries
 	  for entry in self.entries:
 	  	print(self.entries[entry].get())
 
 	def resetTable(self):
-		print("resetTable called")    
+		for parameter in self.parameters:
+			self.entries[parameter[0]].delete(0, 'end')
+			self.entries[parameter[0]].insert(0, parameter[1])
 
 	def formatGUI(self):
 
