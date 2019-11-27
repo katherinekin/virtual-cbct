@@ -4,4 +4,4 @@ dist/*
 *.egg-info
 build/*
 *.jpg
-*/output/
+output/*
