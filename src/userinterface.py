@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.scrolledtext as tkst
-# import astra_cbct as cbct
+import astra_cbct as cbct
 
 LARGE_FONT = ("Verdana", 14)
 
@@ -16,8 +16,8 @@ class Application(tk.Frame):
 		#Title of application
 		title = tk.Label(
 			self.table, text = "Welcome to virtual-cbct\n\n",
-			font=LARGE_FONT, justify='center')
-		title.grid(padx = 5)
+			font=LARGE_FONT)
+		title.grid(padx = 5, row = 0, column = 1)
 
 		self.parameters = [
 			("Distance to x-ray source (mm)", 300),
@@ -52,10 +52,24 @@ class Application(tk.Frame):
 		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
         
 	def submitReq(self):
-	  # create astra-cbct
-	  # set attributes using form entries
-	  for entry in self.entries:
-	  	print(self.entries[entry].get())
+		cbct_obj = cbct.Virtual_Cbct()
+
+		for entry in self.entries:
+			if "source" in entry:
+				cbct_obj.distance_source_origin = int(self.entries[entry].get())
+			elif "distance" in entry and "detector" in entry:
+				cbct_obj.distance_origin_detector = int(self.entries[entry].get())
+			elif "pixel" in entry:
+				cbct_obj.detector_pixel_size = float(self.entries[entry].get())
+			elif "rows" in entry:
+				cbct_obj.detector_rows = int(self.entries[entry].get())
+			elif "columns" in entry:
+				cbct_obj.detector_cols = int(self.entries[entry].get())
+			elif "projections" in entry:
+				cbct_obj.num_of_projections = int(self.entries[entry].get())
+
+		cbct_obj.start_run()
+		print("Run complete.")
 
 	def resetTable(self):
 		for parameter in self.parameters:

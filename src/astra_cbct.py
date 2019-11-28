@@ -18,10 +18,11 @@ class Virtual_Cbct():
 		self.detector_rows = 200  # Vertical size of detector [pixels].
 		self.detector_cols = 200  # Horizontal size of detector [pixels].
 		self.num_of_projections = 180
+		
+	def start_run(self):
+		self.phantom = self.create_phantom()
 		self.angles = np.linspace(
 			0, 2 * np.pi, num = self.num_of_projections, endpoint=False)
-		self.phantom = self.create_phantom()
-
 		self.proj_geom = astra.create_proj_geom('cone', 1, 1, 
 			self.detector_rows, self.detector_cols, self.angles,
 		  (self.distance_source_origin + self.distance_origin_detector) /
@@ -29,6 +30,8 @@ class Virtual_Cbct():
 
 		self.vol_geom = astra.creators.create_vol_geom(
 			self.detector_cols, self.detector_cols, self.detector_rows)
+		self.create_projections()
+		self.create_reconstructions()
 
 	def create_phantom(self):
 		# Create phantom	
@@ -56,8 +59,6 @@ class Virtual_Cbct():
 				self.detector_cols // 2 + wc // 2 : self.detector_cols // 2 + wb // 2,
 				self.detector_cols // 2 - 5 : self.detector_cols // 2 + 5
 			] = 0
-
-		
 		return phantom
 	
 	def create_projections(self):
@@ -133,8 +134,5 @@ class Virtual_Cbct():
 		astra.data3d.delete(reconstruction_id)
 		astra.data3d.delete(projections_id)
 
-	
-
-cbct = Virtual_Cbct()
-cbct.create_projections()
-cbct.create_reconstructions()
+# cbct = Virtual_Cbct()
+# cbct.start_run()
