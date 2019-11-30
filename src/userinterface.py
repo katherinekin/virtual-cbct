@@ -11,14 +11,17 @@ class Application(tk.Frame):
 		self.grid()
 		self.formatGUI()
 		self.createWidgets()
+		self.cbct_obj = cbct.Virtual_Cbct()
 
 	def createWidgets(self):
 		#Title of application
 		title = tk.Label(
 			self.table, text = "Welcome to virtual-cbct\n\n",
 			font=LARGE_FONT)
-		title.grid(padx = 5, row = 0, column = 1)
+		title.grid(padx = 5, row = 0)
 
+		# Create a label frame for x-ray parameters
+		xraySettingsFrame = tk.LabelFrame(self.table, text = "X-ray Settings")
 		self.parameters = [
 			("Distance to x-ray source (mm)", 300),
 			("Distance to x-ray detector (mm)", 100),
@@ -28,47 +31,58 @@ class Application(tk.Frame):
 			("Number of projections", 180)
 		]
 
-		rowcount = 1
+		rowcount = 0
 		self.entries = {} # Hash each entry element by field name
 		for parameter in self.parameters:
-			tk.Label(self.table, text = parameter[0]).grid(row = rowcount, column = 0)
-			entry = tk.Entry(self.table)
+			tk.Label(xraySettingsFrame, text = parameter[0]).grid(row = rowcount, column = 0)
+			entry = tk.Entry(xraySettingsFrame)
 			entry.insert(tk.END, parameter[1])
 			entry.grid(row = rowcount, column = 1)
 			self.entries[parameter[0]] = entry
 			rowcount += 1
 
-		buttonFrame = tk.Frame(self.table)
-		#RESET button to delete the table
+		buttonFrame = tk.Frame(xraySettingsFrame)
+		#RESET button to set back to default values
 		self.resetButton = ttk.Button(buttonFrame, text = "RESET")
 		self.resetButton["command"] = self.resetTable
 		self.resetButton.grid(row = 0, column = 0)
-
-		#SUBMIT button to run cbct
-		self.submitButton = ttk.Button(buttonFrame, text = "SUBMIT")
-		self.submitButton["command"] = self.submitReq
-		self.submitButton.grid(row = 0, column = 1)
+		# SAVE button to save new xray settings
+		self.saveXrayButton = ttk.Button(buttonFrame, text = "SAVE")
+		self.saveXrayButton["command"] = self.saveXraySettings
+		self.saveXrayButton.grid(row = 0, column = 1)
 
 		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
-        
-	def submitReq(self):
-		cbct_obj = cbct.Virtual_Cbct()
+		rowcount += 1
 
+		xraySettingsFrame.grid(padx = 5, row = 1)
+
+		self.submitButton = ttk.Button(self.table, text = "SUBMIT")
+		self.submitButton["command"] = self.submitReq
+		self.submitButton.grid(row = 2, column = 3)
+
+
+	def saveXraySettings(self):
 		for entry in self.entries:
 			if "source" in entry:
-				cbct_obj.distance_source_origin = int(self.entries[entry].get())
+				self.cbct_obj.distance_source_origin = int(self.entries[entry].get())
 			elif "distance" in entry and "detector" in entry:
-				cbct_obj.distance_origin_detector = int(self.entries[entry].get())
+				self.cbct_obj.distance_origin_detector = int(self.entries[entry].get())
 			elif "pixel" in entry:
-				cbct_obj.detector_pixel_size = float(self.entries[entry].get())
+				self.cbct_obj.detector_pixel_size = float(self.entries[entry].get())
 			elif "rows" in entry:
-				cbct_obj.detector_rows = int(self.entries[entry].get())
+				self.cbct_obj.detector_rows = int(self.entries[entry].get())
 			elif "columns" in entry:
-				cbct_obj.detector_cols = int(self.entries[entry].get())
+				self.cbct_obj.detector_cols = int(self.entries[entry].get())
 			elif "projections" in entry:
-				cbct_obj.num_of_projections = int(self.entries[entry].get())
+				self.cbct_obj.num_of_projections = int(self.entries[entry].get())
+		print("Saved Xray settings.")
 
-		cbct_obj.start_run()
+	def autoSave(self):
+		self.saveXraySettings()
+
+	def submitReq(self):
+		self.autoSave()
+		self.cbct_obj.start_run()
 		print("Run complete.")
 
 	def resetTable(self):
