@@ -10,8 +10,9 @@ class Application(tk.Frame):
 		tk.Frame.__init__(self, master)
 		self.grid()
 		self.formatGUI()
+		self.entries = {} # Hash each entry element by field name
 		self.createWidgets()
-		self.cbct_obj = cbct.Virtual_Cbct()
+		self.cbct_obj = cbct.Virtual_Cbct()		
 
 	def createWidgets(self):
 		#Title of application
@@ -22,7 +23,19 @@ class Application(tk.Frame):
 
 		# Create a label frame for x-ray parameters
 		xraySettingsFrame = tk.LabelFrame(self.table, text = "X-ray Settings")
-		self.parameters = [
+		self.xraySettingsWidget(xraySettingsFrame)
+		xraySettingsFrame.grid(padx = 5, row = 1)
+
+		phantomFrame = tk.LabelFrame(self.table, text = "Phantom Settings")
+		self.phantomSettingsWidget(phantomFrame)
+		phantomFrame.grid(padx = 5, row = 2)
+
+		self.submitButton = ttk.Button(self.table, text = "SUBMIT")
+		self.submitButton["command"] = self.submitReq
+		self.submitButton.grid(row = 3, column = 3)
+
+	def xraySettingsWidget(self, xraySettingsFrame):		
+		parameters = [
 			("Distance to x-ray source (mm)", 300),
 			("Distance to x-ray detector (mm)", 100),
 			("Detector pixel size (mm)", 1.05),
@@ -31,9 +44,8 @@ class Application(tk.Frame):
 			("Number of projections", 180)
 		]
 
-		rowcount = 0
-		self.entries = {} # Hash each entry element by field name
-		for parameter in self.parameters:
+		rowcount = 0		
+		for parameter in parameters:
 			tk.Label(xraySettingsFrame, text = parameter[0]).grid(row = rowcount, column = 0)
 			entry = tk.Entry(xraySettingsFrame)
 			entry.insert(tk.END, parameter[1])
@@ -43,23 +55,48 @@ class Application(tk.Frame):
 
 		buttonFrame = tk.Frame(xraySettingsFrame)
 		#RESET button to set back to default values
-		self.resetButton = ttk.Button(buttonFrame, text = "RESET")
-		self.resetButton["command"] = self.resetTable
-		self.resetButton.grid(row = 0, column = 0)
+		resetButton = ttk.Button(buttonFrame, text = "RESET", command = lambda: self.reset(parameters))
+		
+		resetButton.grid(row = 0, column = 0)
 		# SAVE button to save new xray settings
-		self.saveXrayButton = ttk.Button(buttonFrame, text = "SAVE")
-		self.saveXrayButton["command"] = self.saveXraySettings
-		self.saveXrayButton.grid(row = 0, column = 1)
+		saveXrayButton = ttk.Button(buttonFrame, text = "SAVE")
+		saveXrayButton["command"] = self.saveXraySettings
+		saveXrayButton.grid(row = 0, column = 1)
 
 		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
 		rowcount += 1
 
-		xraySettingsFrame.grid(padx = 5, row = 1)
+	def phantomSettingsWidget(self, phantomFrame):
+		parameters = [
+			("Height of phantom", 1),
+			("Width of phantom", 1),
+			("Length of phantom", 1),
+			("Thickness of shell", 1),
+			("Attenuation of shell", 1),
+			("Attenuation of cavity", 0)
+		]
 
-		self.submitButton = ttk.Button(self.table, text = "SUBMIT")
-		self.submitButton["command"] = self.submitReq
-		self.submitButton.grid(row = 2, column = 3)
+		rowcount = 0		
+		for parameter in parameters:
+			tk.Label(phantomFrame, text = parameter[0]).grid(row = rowcount, column = 0)
+			entry = tk.Entry(phantomFrame)
+			entry.insert(tk.END, parameter[1])
+			entry.grid(row = rowcount, column = 1)
+			self.entries[parameter[0]] = entry
+			rowcount += 1
 
+		buttonFrame = tk.Frame(phantomFrame)
+		#RESET button to set back to default values
+		self.resetPhantomButton = ttk.Button(buttonFrame, text = "RESET", command = lambda: self.reset(parameters))
+		
+		self.resetPhantomButton.grid(row = 0, column = 0)
+		# SAVE button to save new xray settings
+		self.savePhantomButton = ttk.Button(buttonFrame, text = "SAVE")
+		self.savePhantomButton["command"] = self.saveXraySettings
+		self.savePhantomButton.grid(row = 0, column = 1)
+
+		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
+		rowcount += 1
 
 	def saveXraySettings(self):
 		for entry in self.entries:
@@ -85,10 +122,11 @@ class Application(tk.Frame):
 		self.cbct_obj.start_run()
 		print("Run complete.")
 
-	def resetTable(self):
-		for parameter in self.parameters:
+	def reset(self, parameters):
+		for parameter in parameters:
 			self.entries[parameter[0]].delete(0, 'end')
 			self.entries[parameter[0]].insert(0, parameter[1])
+		print("Reset Xray settings")
 
 	def formatGUI(self):
 
