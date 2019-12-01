@@ -1,37 +1,40 @@
-# Generates a hollow phantom to represent the skull
-# 512 x 512 default size for now
-# Outside represents air
-# Thickness represents thickness of the skull
-# Rest of inside represents brain
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-xPixels = yPixels = 512
-zPixels = 512
+class PhantomGenerator():
+	def __init__(self):
+		self.thickness = 10
+		self.height = 110
+		self.width = 40
+		self.shellAttenuation = 1
+		self.cavityAttenuation = 0
 
-def get_attenuations():
-	# phantom = np.zeros((yPixels, xPixels), np.uint8) # phantom image
-	U = np.zeros((yPixels, xPixels), np.float32) # attenuation matrix
+	def create_phantom(self, detector_rows, detector_cols):
+		# Create phantom	
+		phantom = np.zeros((detector_rows, detector_cols, detector_cols))
+		cavityHeight = self.height - (self.thickness * 2)  # Height of cavity in beam [pixels].
+		cavityWidth = self.width - (self.thickness * 2)   # Width of cavity in beam [pixels].
+		phantom[
+				detector_rows // 2 - self.height // 2 : detector_rows // 2 + self.height // 2,
+				detector_cols // 2 - self.width // 2 : detector_cols // 2 + self.width // 2,
+				detector_cols // 2 - self.width // 2 : detector_cols // 2 + self.width // 2
+			] = 1
 
-	struct_1 = np.zeros((yPixels, xPixels), np.float32)
-	struct_1[int(yPixels * 0.25): int(yPixels * 0.25) + 256, 
-			int(xPixels * 0.25): int(xPixels * 0.25) + 256] = 1
-	attenuation_1 = 0.6
+		phantom[
+				detector_rows // 2 - cavityHeight // 2 : detector_rows // 2 + cavityHeight // 2,
+				detector_cols // 2 - cavityWidth // 2 : detector_cols // 2 + cavityWidth // 2,
+				detector_cols // 2 - cavityWidth // 2 : detector_cols // 2 + cavityWidth // 2
+			] = 0
 
-	# TODO: thickness can be passed as an argument
-	thickness = 20
+		phantom[
+				detector_rows // 2 - 5 : detector_rows // 2 + 5,
+				detector_cols // 2 + cavityWidth // 2 : detector_cols // 2 + self.width // 2,
+				detector_cols // 2 - 5 : detector_cols // 2 + 5
+			] = 0
+		return phantom
 
-	struct_2 = np.zeros((yPixels, xPixels), np.float32)
-	struct_2[int(yPixels * 0.25) + thickness: int(yPixels * 0.25) + 256 - thickness, 
-			int(xPixels * 0.25) + thickness: int(xPixels * 0.25) + 256 - thickness] = 1
-	attenuation_2 = 0.2
-
-	# phantom += struct_1.astype(np.uint8)        
-	U = U + struct_1 * attenuation_1 + struct_2 * attenuation_2 - struct_2 * attenuation_1
-
-	return U
-
+# TODO: determine if below is needed
 def generate_phantom():
 	phantom = np.zeros((yPixels, xPixels), np.uint8) # phantom image
 	return get_attenuations() * 255

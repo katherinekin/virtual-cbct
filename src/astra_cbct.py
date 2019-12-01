@@ -19,8 +19,8 @@ class Virtual_Cbct():
 		self.detector_cols = 200  # Horizontal size of detector [pixels].
 		self.num_of_projections = 180
 		
-	def start_run(self):
-		self.phantom = self.create_phantom()
+	def start_run(self, phantom):
+		self.phantom = phantom
 		self.angles = np.linspace(
 			0, 2 * np.pi, num = self.num_of_projections, endpoint=False)
 		self.proj_geom = astra.create_proj_geom('cone', 1, 1, 
@@ -32,34 +32,6 @@ class Virtual_Cbct():
 			self.detector_cols, self.detector_cols, self.detector_rows)
 		self.create_projections()
 		self.create_reconstructions()
-
-	def create_phantom(self):
-		# Create phantom	
-		phantom = np.zeros(
-			(self.detector_rows, self.detector_cols, self.detector_cols))
-
-		hb = 110  # Height of beam [pixels].
-		wb = 40   # Width of beam [pixels].
-		hc = 100  # Height of cavity in beam [pixels].
-		wc = 30   # Width of cavity in beam [pixels].
-		phantom[
-				self.detector_rows // 2 - hb // 2 : self.detector_rows // 2 + hb // 2,
-				self.detector_cols // 2 - wb // 2 : self.detector_cols // 2 + wb // 2,
-				self.detector_cols // 2 - wb // 2 : self.detector_cols // 2 + wb // 2
-			] = 1
-
-		phantom[
-				self.detector_rows // 2 - hc // 2 : self.detector_rows // 2 + hc // 2,
-				self.detector_cols // 2 - wc // 2 : self.detector_cols // 2 + wc // 2,
-				self.detector_cols // 2 - wc // 2 : self.detector_cols // 2 + wc // 2
-			] = 0
-
-		phantom[
-				self.detector_rows // 2 - 5 : self.detector_rows // 2 + 5,
-				self.detector_cols // 2 + wc // 2 : self.detector_cols // 2 + wb // 2,
-				self.detector_cols // 2 - 5 : self.detector_cols // 2 + 5
-			] = 0
-		return phantom
 	
 	def create_projections(self):
 		# Create projections. With increasing angles, the projection are such that the
@@ -127,7 +99,7 @@ class Virtual_Cbct():
 		for i in range(self.detector_rows):
 			im = reconstruction[i, :, :]
 			im = np.flipud(im)
-			imwrite(join(output_dir, 'reco%04d.png' % i), im)
+			imwrite(join(output_dir, 'reco%04d.tif' % i), im)
 		 
 		# Cleanup.
 		astra.algorithm.delete(algorithm_id)

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import tkinter.scrolledtext as tkst
 import astra_cbct as cbct
+import phantom as pm
 
 LARGE_FONT = ("Verdana", 14)
 
@@ -12,7 +13,8 @@ class Application(tk.Frame):
 		self.formatGUI()
 		self.entries = {} # Hash each entry element by field name
 		self.createWidgets()
-		self.cbct_obj = cbct.Virtual_Cbct()		
+		self.cbct_obj = cbct.Virtual_Cbct()
+		self.phantomGenerator = pm.PhantomGenerator()
 
 	def createWidgets(self):
 		#Title of application
@@ -73,7 +75,7 @@ class Application(tk.Frame):
 			("Length of phantom", 1),
 			("Thickness of shell", 1),
 			("Attenuation of shell", 1),
-			("Attenuation of cavity", 0)
+			("Attenuation of cavity", 0),
 		]
 
 		rowcount = 0		
@@ -114,12 +116,18 @@ class Application(tk.Frame):
 				self.cbct_obj.num_of_projections = int(self.entries[entry].get())
 		print("Saved Xray settings.")
 
+
 	def autoSave(self):
 		self.saveXraySettings()
 
 	def submitReq(self):
 		self.autoSave()
-		self.cbct_obj.start_run()
+		
+		phantom = self.phantomGenerator.create_phantom(
+			self.cbct_obj.detector_rows,
+			self.cbct_obj.detector_cols)
+
+		self.cbct_obj.start_run(phantom)
 		print("Run complete.")
 
 	def reset(self, parameters):
