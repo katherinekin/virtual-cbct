@@ -19,13 +19,13 @@ class PhantomGenerator():
 				detector_rows // 2 - self.height // 2 : detector_rows // 2 + self.height // 2,
 				detector_cols // 2 - self.width // 2 : detector_cols // 2 + self.width // 2,
 				detector_cols // 2 - self.width // 2 : detector_cols // 2 + self.width // 2
-			] = 1
+			] = self.shellAttenuation
 
 		phantom[
 				detector_rows // 2 - cavityHeight // 2 : detector_rows // 2 + cavityHeight // 2,
 				detector_cols // 2 - cavityWidth // 2 : detector_cols // 2 + cavityWidth // 2,
 				detector_cols // 2 - cavityWidth // 2 : detector_cols // 2 + cavityWidth // 2
-			] = 0
+			] = self.cavityAttenuation
 
 		phantom[
 				detector_rows // 2 - 5 : detector_rows // 2 + 5,

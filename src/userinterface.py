@@ -70,10 +70,9 @@ class Application(tk.Frame):
 
 	def phantomSettingsWidget(self, phantomFrame):
 		parameters = [
-			("Height of phantom", 1),
-			("Width of phantom", 1),
-			("Length of phantom", 1),
-			("Thickness of shell", 1),
+			("Height of phantom", 110),
+			("Width of phantom", 40),			
+			("Thickness of shell", 5),
 			("Attenuation of shell", 1),
 			("Attenuation of cavity", 0),
 		]
@@ -94,7 +93,7 @@ class Application(tk.Frame):
 		self.resetPhantomButton.grid(row = 0, column = 0)
 		# SAVE button to save new xray settings
 		self.savePhantomButton = ttk.Button(buttonFrame, text = "SAVE")
-		self.savePhantomButton["command"] = self.saveXraySettings
+		self.savePhantomButton["command"] = self.savePhantomSettings
 		self.savePhantomButton.grid(row = 0, column = 1)
 
 		buttonFrame.grid(row = rowcount, column = 1, pady = 5)
@@ -116,13 +115,27 @@ class Application(tk.Frame):
 				self.cbct_obj.num_of_projections = int(self.entries[entry].get())
 		print("Saved Xray settings.")
 
+	def savePhantomSettings(self):
+		for entry in self.entries:
+			if "Height of phantom" in entry:
+				self.phantomGenerator.height = int(self.entries[entry].get())
+			elif "Width of phantom" in entry:
+				self.phantomGenerator.width = int(self.entries[entry].get())
+			elif "Thickness" in entry:
+				self.phantomGenerator.thickness = int(self.entries[entry].get())
+			elif "Attenuation" in entry and "shell" in entry:
+				self.phantomGenerator.shellAttenuation = float(self.entries[entry].get())
+			elif "Attenuation" in entry and "cavity" in entry:
+				self.phantomGenerator.cavityAttenuation = float(self.entries[entry].get())
+		print("Saved Phantom settings.")
 
 	def autoSave(self):
 		self.saveXraySettings()
+		self.savePhantomSettings()
 
 	def submitReq(self):
 		self.autoSave()
-		
+
 		phantom = self.phantomGenerator.create_phantom(
 			self.cbct_obj.detector_rows,
 			self.cbct_obj.detector_cols)
