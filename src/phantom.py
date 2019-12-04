@@ -10,27 +10,27 @@ class PhantomGenerator():
 		self.shellAttenuation = 1
 		self.cavityAttenuation = 0
 
-	def create_phantom(self, detector_rows, detector_cols):
+	def create_phantom(self, detectorRows, detectorColumns):
 		# Create phantom	
-		phantom = np.zeros((detector_rows, detector_cols, detector_cols))
+		phantom = np.zeros((detectorRows, detectorColumns, detectorColumns))
 		cavityHeight = self.height - (self.thickness * 2)  # Height of cavity in beam [pixels].
 		cavityWidth = self.width - (self.thickness * 2)   # Width of cavity in beam [pixels].
 		phantom[
-				detector_rows // 2 - self.height // 2 : detector_rows // 2 + self.height // 2,
-				detector_cols // 2 - self.width // 2 : detector_cols // 2 + self.width // 2,
-				detector_cols // 2 - self.width // 2 : detector_cols // 2 + self.width // 2
+				detectorRows // 2 - self.height // 2 : detectorRows // 2 + self.height // 2,
+				detectorColumns // 2 - self.width // 2 : detectorColumns // 2 + self.width // 2,
+				detectorColumns // 2 - self.width // 2 : detectorColumns // 2 + self.width // 2
 			] = self.shellAttenuation
 
 		phantom[
-				detector_rows // 2 - cavityHeight // 2 : detector_rows // 2 + cavityHeight // 2,
-				detector_cols // 2 - cavityWidth // 2 : detector_cols // 2 + cavityWidth // 2,
-				detector_cols // 2 - cavityWidth // 2 : detector_cols // 2 + cavityWidth // 2
+				detectorRows // 2 - cavityHeight // 2 : detectorRows // 2 + cavityHeight // 2,
+				detectorColumns // 2 - cavityWidth // 2 : detectorColumns // 2 + cavityWidth // 2,
+				detectorColumns // 2 - cavityWidth // 2 : detectorColumns // 2 + cavityWidth // 2
 			] = self.cavityAttenuation
 
 		phantom[
-				detector_rows // 2 - 5 : detector_rows // 2 + 5,
-				detector_cols // 2 + cavityWidth // 2 : detector_cols // 2 + self.width // 2,
-				detector_cols // 2 - 5 : detector_cols // 2 + 5
+				detectorRows // 2 - 5 : detectorRows // 2 + 5,
+				detectorColumns // 2 + cavityWidth // 2 : detectorColumns // 2 + self.width // 2,
+				detectorColumns // 2 - 5 : detectorColumns // 2 + 5
 			] = 0
 		return phantom
 
