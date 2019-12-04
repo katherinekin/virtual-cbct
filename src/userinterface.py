@@ -9,12 +9,20 @@ LARGE_FONT = ("Verdana", 14)
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
+		self.vCommand = (self.register(self.onValidate), '%S' )
 		self.grid()
 		self.formatGUI()
 		self.entries = {} # Hash each entry element by field name
 		self.createWidgets()
 		self.cbct_obj = cbct.Virtual_Cbct()
 		self.phantomGenerator = pm.PhantomGenerator()
+
+	def onValidate(self, S):
+		# Check if int or float, must be positive number
+		if (S.isdigit() or S.count('.') == 1 and (S.replace('.', '')).isdigit()):
+			return True
+		self.bell()
+		return False
 
 	def createWidgets(self):
 		#Title of application
@@ -49,7 +57,7 @@ class Application(tk.Frame):
 		rowcount = 0		
 		for parameter in parameters:
 			tk.Label(xraySettingsFrame, text = parameter[0]).grid(row = rowcount, column = 0)
-			entry = tk.Entry(xraySettingsFrame)
+			entry = tk.Entry(xraySettingsFrame, validate="key", validatecommand= self.vCommand)
 			entry.insert(tk.END, parameter[1])
 			entry.grid(row = rowcount, column = 1)
 			self.entries[parameter[0]] = entry
@@ -80,7 +88,7 @@ class Application(tk.Frame):
 		rowcount = 0		
 		for parameter in parameters:
 			tk.Label(phantomFrame, text = parameter[0]).grid(row = rowcount, column = 0)
-			entry = tk.Entry(phantomFrame)
+			entry = tk.Entry(phantomFrame, validate="key", validatecommand= self.vCommand)
 			entry.insert(tk.END, parameter[1])
 			entry.grid(row = rowcount, column = 1)
 			self.entries[parameter[0]] = entry
@@ -166,3 +174,4 @@ class Application(tk.Frame):
 
 	def onFrameConfigure(self, event):
 		self.canvas.configure(scrollregion = self.canvas.bbox("all"))
+

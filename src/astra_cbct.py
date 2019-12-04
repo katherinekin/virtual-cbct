@@ -33,8 +33,8 @@ class Virtual_Cbct():
 		self.create_projections()
 		self.create_reconstructions()
 	
-	def create_projections(self):f
-		# Create projections. With increasing angles, the projection are such that the
+	def create_projections(self):
+		# Create projections. With increasing angles, the projection are 	xsuch that the
 		# object is rotated clockwise. Slice zero is at the top of the object. The
 		# projection from angle zero looks upwards from the bottom of the slice.
 		phantomId = astra.data3d.create('-vol', self.vol_geom, data = self.phantom)
