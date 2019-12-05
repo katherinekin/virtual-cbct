@@ -110,17 +110,17 @@ class Application(tk.Frame):
 	def saveXraySettings(self):
 		for entry in self.entries:
 			if "source" in entry:
-				self.cbct_obj.distance_source_origin = int(self.entries[entry].get())
+				self.cbct_obj.distanceFromSourceToOrigin = int(self.entries[entry].get())
 			elif "distance" in entry and "detector" in entry:
-				self.cbct_obj.distance_origin_detector = int(self.entries[entry].get())
+				self.cbct_obj.distanceFromOriginToDetector = int(self.entries[entry].get())
 			elif "pixel" in entry:
-				self.cbct_obj.detector_pixel_size = float(self.entries[entry].get())
+				self.cbct_obj.pixelSize = float(self.entries[entry].get())
 			elif "rows" in entry:
-				self.cbct_obj.detector_rows = int(self.entries[entry].get())
+				self.cbct_obj.detectorRows = int(self.entries[entry].get())
 			elif "columns" in entry:
-				self.cbct_obj.detector_cols = int(self.entries[entry].get())
+				self.cbct_obj.detectorColumns = int(self.entries[entry].get())
 			elif "projections" in entry:
-				self.cbct_obj.num_of_projections = int(self.entries[entry].get())
+				self.cbct_obj.numberOfProjections = int(self.entries[entry].get())
 		print("Saved Xray settings.")
 
 	def savePhantomSettings(self):
@@ -145,8 +145,8 @@ class Application(tk.Frame):
 		self.autoSave()
 
 		phantom = self.phantomGenerator.create_phantom(
-			self.cbct_obj.detector_rows,
-			self.cbct_obj.detector_cols)
+			self.cbct_obj.detectorRows,
+			self.cbct_obj.detectorColumns)
 
 		self.cbct_obj.start_run(phantom)
 		print("Run complete.")
