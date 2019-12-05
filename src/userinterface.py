@@ -18,7 +18,7 @@ class Application(tk.Frame):
 		self.phantomGenerator = pm.PhantomGenerator()
 
 	def onValidateInt(self, S):
-		if (S.isdigit() or S.count('.') == 1 and (S.replace('.', '')).isdigit()):
+		if S.isdigit():
 			return True
 		self.bell()
 		return False
@@ -26,6 +26,7 @@ class Application(tk.Frame):
 	def onValidateFloat(self, S):
 		for char in S:
 			if char not in "0123456789.":
+				self.bell()
 				return False
 		return True
 
@@ -114,7 +115,7 @@ class Application(tk.Frame):
 		#RESET button to set back to default values
 		self.resetPhantomButton = ttk.Button(buttonFrame, text = "RESET", command = lambda: self.reset(parameters))		
 		self.resetPhantomButton.grid(row = 0, column = 0)
-		
+
 		# SAVE button to save new xray settings
 		self.savePhantomButton = ttk.Button(buttonFrame, text = "SAVE")
 		self.savePhantomButton["command"] = self.savePhantomSettings
