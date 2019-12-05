@@ -9,7 +9,7 @@ LARGE_FONT = ("Verdana", 14)
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
-		self.vCommand = (self.register(self.onValidate), '%S' )
+		self.vCommand = (self.register(self.onValidateInt), '%S' )
 		self.grid()
 		self.formatGUI()
 		self.entries = {} # Hash each entry element by field name
@@ -17,16 +17,20 @@ class Application(tk.Frame):
 		self.cbct_obj = cbct.Virtual_Cbct()
 		self.phantomGenerator = pm.PhantomGenerator()
 
-	def onValidate(self, S):
-		# Check if int or float, must be positive number
+	def onValidateInt(self, S):
 		if (S.isdigit() or S.count('.') == 1 and (S.replace('.', '')).isdigit()):
-		# if S.isdigit():
 			return True
 		self.bell()
 		return False
 
+	def onValidateFloat(self, S):
+		for char in S:
+			if char not in "0123456789.":
+				return False
+		return True
+
 	def createWidgets(self):
-		#Title of application
+		# Add title of application
 		title = tk.Label(
 			self.table, text = "Welcome to virtual-cbct\n\n",
 			font=LARGE_FONT)
@@ -58,7 +62,12 @@ class Application(tk.Frame):
 		rowcount = 0		
 		for parameter in parameters:
 			tk.Label(xraySettingsFrame, text = parameter[0]).grid(row = rowcount, column = 0)
-			entry = tk.Entry(xraySettingsFrame, validate="key", validatecommand= self.vCommand)
+			if "pixel" in parameter[0]:
+				entry = tk.Entry(xraySettingsFrame, validate="key", 
+					validatecommand = (self.register(self.onValidateFloat), '%S' ))
+			else:
+				entry = tk.Entry(xraySettingsFrame, validate="key", 
+					validatecommand = (self.register(self.onValidateInt), '%S' ))
 			entry.insert(tk.END, parameter[1])
 			entry.grid(row = rowcount, column = 1)
 			self.entries[parameter[0]] = entry
@@ -89,17 +98,23 @@ class Application(tk.Frame):
 		rowcount = 0		
 		for parameter in parameters:
 			tk.Label(phantomFrame, text = parameter[0]).grid(row = rowcount, column = 0)
-			entry = tk.Entry(phantomFrame, validate="key", validatecommand= self.vCommand)
+			if "Attenuation" in parameter[0]:
+				entry = tk.Entry(phantomFrame, validate="key", 
+					validatecommand = (self.register(self.onValidateFloat), '%S' ))
+			else:
+				entry = tk.Entry(phantomFrame, validate="key", 
+					validatecommand = (self.register(self.onValidateInt), '%S' ))
 			entry.insert(tk.END, parameter[1])
 			entry.grid(row = rowcount, column = 1)
 			self.entries[parameter[0]] = entry
 			rowcount += 1
 
 		buttonFrame = tk.Frame(phantomFrame)
+
 		#RESET button to set back to default values
-		self.resetPhantomButton = ttk.Button(buttonFrame, text = "RESET", command = lambda: self.reset(parameters))
-		
+		self.resetPhantomButton = ttk.Button(buttonFrame, text = "RESET", command = lambda: self.reset(parameters))		
 		self.resetPhantomButton.grid(row = 0, column = 0)
+		
 		# SAVE button to save new xray settings
 		self.savePhantomButton = ttk.Button(buttonFrame, text = "SAVE")
 		self.savePhantomButton["command"] = self.savePhantomSettings
@@ -115,7 +130,10 @@ class Application(tk.Frame):
 			elif "distance" in entry and "detector" in entry:
 				self.cbct_obj.distanceFromOriginToDetector = int(self.entries[entry].get())
 			elif "pixel" in entry:
-				self.cbct_obj.pixelSize = float(self.entries[entry].get())
+				correctedString = self.stringWithoutExtraDecimals(self.entries[entry].get())
+				self.entries[entry].delete(0, tk.END)
+				self.entries[entry].insert(0, correctedString)
+				self.cbct_obj.pixelSize = float(correctedString)				
 			elif "rows" in entry:
 				self.cbct_obj.detectorRows = int(self.entries[entry].get())
 			elif "columns" in entry:
@@ -123,6 +141,10 @@ class Application(tk.Frame):
 			elif "projections" in entry:
 				self.cbct_obj.numberOfProjections = int(self.entries[entry].get())
 		print("Saved Xray settings.")
+
+	def stringWithoutExtraDecimals(self, S):
+		idx = S.find('.') + 1
+		return S[:idx] + S[idx:].replace('.', '')
 
 	def savePhantomSettings(self):
 		for entry in self.entries:
@@ -132,10 +154,14 @@ class Application(tk.Frame):
 				self.phantomGenerator.width = int(self.entries[entry].get())
 			elif "Thickness" in entry:
 				self.phantomGenerator.thickness = int(self.entries[entry].get())
-			elif "Attenuation" in entry and "shell" in entry:
-				self.phantomGenerator.shellAttenuation = float(self.entries[entry].get())
-			elif "Attenuation" in entry and "cavity" in entry:
-				self.phantomGenerator.cavityAttenuation = float(self.entries[entry].get())
+			elif "Attenuation" in entry:
+				correctedString = self.stringWithoutExtraDecimals(self.entries[entry].get())
+				self.entries[entry].delete(0, tk.END)
+				self.entries[entry].insert(0, correctedString)
+				if "shell" in entry:
+					self.phantomGenerator.shellAttenuation = float(correctedString)
+				elif "cavity" in entry:
+					self.phantomGenerator.cavityAttenuation = float(correctedString)
 		print("Saved Phantom settings.")
 
 	def autoSave(self):

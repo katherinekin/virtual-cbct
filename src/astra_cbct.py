@@ -5,7 +5,7 @@ import numpy as np
 from os.path import join
 from imageio import get_writer, imread, imwrite
  
-import astra
+# import astra
 
 PROJECTION_RESULTS = 'output/dataset'
 RECONSTRUCTION_RESULTS = 'output/reconstruction'
