@@ -20,6 +20,7 @@ class Application(tk.Frame):
 	def onValidate(self, S):
 		# Check if int or float, must be positive number
 		if (S.isdigit() or S.count('.') == 1 and (S.replace('.', '')).isdigit()):
+		# if S.isdigit():
 			return True
 		self.bell()
 		return False

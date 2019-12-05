@@ -1,5 +1,6 @@
 from __future__ import division
 import os
+import shutil
 import numpy as np
 from os.path import join
 from imageio import get_writer, imread, imwrite
@@ -52,9 +53,15 @@ class Virtual_Cbct():
 		# Save projections.
 		projections = np.round(projections * 65535).astype(np.uint16)
 
+		# If output path exists (from previous run) delete and create new folder
 		output_dir = PROJECTION_RESULTS	
-		if not os.path.exists(output_dir):
-			os.makedirs(output_dir)
+		if os.path.exists(output_dir):
+			shutil.rmtree(output_dir)
+		os.makedirs(output_dir)
+
+		# if not os.path.exists(output_dir):
+		# 	os.makedirs(output_dir)
+
 
 		for i in range(self.numberOfProjections):
 			projection = projections[:, i, :]
@@ -69,8 +76,12 @@ class Virtual_Cbct():
 		# Set result directories
 		input_dir = PROJECTION_RESULTS
 		output_dir = RECONSTRUCTION_RESULTS
-		if not os.path.exists(output_dir):
-			os.makedirs(output_dir)
+		if os.path.exists(output_dir):
+			shutil.rmtree(output_dir)
+		os.makedirs(output_dir)
+		
+		# if not os.path.exists(output_dir):
+		# 	os.makedirs(output_dir)
 		# Load projections from saved directory.
 		projections = np.zeros((self.detectorRows, self.numberOfProjections, self.detectorColumns))
 		for i in range(self.numberOfProjections):
