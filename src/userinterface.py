@@ -175,7 +175,7 @@ class Application(tk.Frame):
 		phantom = self.phantomGenerator.create_phantom(
 			self.cbct_obj.detectorRows,
 			self.cbct_obj.detectorColumns)
-
+		pm.get_phantom_jpg(phantom)
 		self.cbct_obj.start_run(phantom)
 		print("Run complete.")
 

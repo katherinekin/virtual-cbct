@@ -29,8 +29,8 @@ class Virtual_Cbct():
 			self.detectorRows, 
 			self.detectorColumns, 
 			self.angles,
-			(self.distanceFromSourceToOrigin + self.distanceFromOriginToDetector) / self.pixelSize, 
-		  	0
+			self.distanceFromSourceToOrigin / self.pixelSize, 
+		  	self.distanceFromOriginToDetector / self.pixelSize
 		)
 
 		self.vol_geom = astra.creators.create_vol_geom(

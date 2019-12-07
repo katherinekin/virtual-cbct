@@ -34,13 +34,10 @@ class PhantomGenerator():
 			] = 0
 		return phantom
 
-# TODO: determine if below is needed
-def generate_phantom():
-	phantom = np.zeros((yPixels, xPixels), np.uint8) # phantom image
-	return get_attenuations() * 255
-
 def get_phantom_jpg(phantom):
-	cv2.imwrite("phantom.jpg", normalize_image(phantom))
+	dimensions = phantom.shape
+	cv2.imwrite("phantom_z.jpg", normalize_image(phantom[dimensions[0]//2, :, :]))
+	cv2.imwrite("phantom_xy.jpg", normalize_image(phantom[:, dimensions[1]//2, :]))
 
 def normalize_image(phantom):
 	min_val = np.min(phantom)
