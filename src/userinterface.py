@@ -190,7 +190,7 @@ class Application(tk.Frame):
 		self.canvas = tk.Canvas(self , width = 700, height=500)
 		#table is the frame object in canvas to populate with widgets
 		self.table = tk.Frame(self.canvas)
-		self.vbar = tk.Scrollbar(self,orient = "vertical")
+		self.vbar = tk.Scrollbar(self, orient = "vertical")
 		self.canvas.config(yscrollcommand = self.vbar.set)
 
 		self.vbar.pack(side = "right",fill = tk.Y)

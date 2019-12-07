@@ -5,7 +5,7 @@ import numpy as np
 from os.path import join
 from imageio import get_writer, imread, imwrite
  
-# import astra
+import astra
 
 PROJECTION_RESULTS = 'output/dataset'
 RECONSTRUCTION_RESULTS = 'output/reconstruction'
@@ -24,10 +24,14 @@ class Virtual_Cbct():
 		self.phantom = phantom
 		self.angles = np.linspace(
 			0, 2 * np.pi, num = self.numberOfProjections, endpoint=False)
-		self.projectionGeometry = astra.create_proj_geom('cone', 1, 1, 
-			self.detectorRows, self.detectorColumns, self.angles,
-		  (self.distanceFromSourceToOrigin + self.distanceFromOriginToDetector) /
-		  self.pixelSize, 0)
+		self.projectionGeometry = astra.create_proj_geom(
+			'cone', 1, 1, 
+			self.detectorRows, 
+			self.detectorColumns, 
+			self.angles,
+			(self.distanceFromSourceToOrigin + self.distanceFromOriginToDetector) / self.pixelSize, 
+		  	0
+		)
 
 		self.vol_geom = astra.creators.create_vol_geom(
 			self.detectorColumns, self.detectorColumns, self.detectorRows)
@@ -35,7 +39,7 @@ class Virtual_Cbct():
 		self.create_reconstructions()
 	
 	def create_projections(self):
-		# Create projections. With increasing angles, the projection are 	xsuch that the
+		# Create projections. With increasing angles, the projection are such that the
 		# object is rotated clockwise. Slice zero is at the top of the object. The
 		# projection from angle zero looks upwards from the bottom of the slice.
 		phantomId = astra.data3d.create('-vol', self.vol_geom, data = self.phantom)
@@ -59,10 +63,6 @@ class Virtual_Cbct():
 			shutil.rmtree(output_dir)
 		os.makedirs(output_dir)
 
-		# if not os.path.exists(output_dir):
-		# 	os.makedirs(output_dir)
-
-
 		for i in range(self.numberOfProjections):
 			projection = projections[:, i, :]
 			with get_writer(join(output_dir, 'proj%04d.tif' %i)) as writer:
@@ -79,10 +79,7 @@ class Virtual_Cbct():
 		if os.path.exists(output_dir):
 			shutil.rmtree(output_dir)
 		os.makedirs(output_dir)
-		
-		# if not os.path.exists(output_dir):
-		# 	os.makedirs(output_dir)
-		# Load projections from saved directory.
+
 		projections = np.zeros((self.detectorRows, self.numberOfProjections, self.detectorColumns))
 		for i in range(self.numberOfProjections):
 			im = imread(join(input_dir, 'proj%04d.tif' % i)).astype(float)
@@ -116,6 +113,3 @@ class Virtual_Cbct():
 		astra.algorithm.delete(algorithm_id)
 		astra.data3d.delete(reconstruction_id)
 		astra.data3d.delete(projectionId)
-
-# cbct = Virtual_Cbct()
-# cbct.start_run()

@@ -8,7 +8,7 @@ def hello() -> str:
 
 def run_app():
 	app = ui.Application()
-	app.master.title("MotifHighlighter Prototype")
+	app.master.title("virtual-cbct prototype")
 	app.mainloop()
 
 if __name__ == "__main__":  

@@ -1,3 +1,1 @@
-paver test
-paver run
-paver clean
+python src/main.py
