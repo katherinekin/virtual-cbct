@@ -36,9 +36,9 @@ class PhantomGenerator():
 
 def get_phantom_jpg(phantom):
 	dimensions = phantom.shape
-	cv2.imwrite("phantom_z.jpg", normalize_image(phantom[dimensions[0]//2, :, :]))
-	cv2.imwrite("phantom_xz.jpg", normalize_image(phantom[:, dimensions[1]//2, :]))
-	cv2.imwrite("phantom_xy.jpg", normalize_image(phantom[:, :, dimensions[1]//2]))
+	cv2.imwrite("phantom_xy.jpg", normalize_image(phantom[dimensions[0]//2, :, :]))
+	cv2.imwrite("phantom_yz.jpg", normalize_image(phantom[:, dimensions[1]//2, :]))
+	cv2.imwrite("phantom_xz.jpg", normalize_image(phantom[:, :, dimensions[1]//2]))
 
 def normalize_image(phantom):
 	min_val = np.min(phantom)

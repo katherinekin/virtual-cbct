@@ -25,3 +25,8 @@ Creating a virtual environment with the dependencies is recommended. To start th
 ```
 python src\main.py
 ```
+Values are preset in the user interface. To test the tool, simply click on the submit button.
+
+## Expected results
+
+After a clicking on the submit button, an output directory will be generated. Within the directory, the folder dataset/ will contain .tif images generated perpendicular to the cone beam CT projections, and represent the 360 degrees view of the phantom. The folder reconstruction/ will contain .tif images reconstruced from these projection images, and represent the slices of the phantom along the axis around which the cone beam would rotate. 
