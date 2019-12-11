@@ -2,7 +2,9 @@
 
 ## Dependencies and setup
 
-This is a python 3 that project uses astra-toolbox to simulate cone beam CT. Dependencies for this project include numpy, scipy, opencv-python, matplotlib, imageio, boost, and an NVIDIA GPU and CUDA (at least version 5.5). 
+This is a python 3 that project uses astra-toolbox to simulate cone beam CT. Dependencies for this project include numpy, scipy, opencv-python, matplotlib, imageio, boost, and an NVIDIA GPU and CUDA (at least version 5.5). Please download and install the CUDA toolkit following the instructions on their website if not already installed: [https://developer.nvidia.com/cuda-toolkit]
+
+The following commands can be used to install the other dependencies:
 
 ```
 pip install numpy
