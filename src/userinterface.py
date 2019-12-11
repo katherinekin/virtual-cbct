@@ -46,6 +46,10 @@ class Application(tk.Frame):
 		self.phantomSettingsWidget(phantomFrame)
 		phantomFrame.grid(padx = 5, row = 2)
 
+		self.phantomButton = ttk.Button(self.table, text = "GET PHANTOM")
+		self.phantomButton["command"] = self.generatePhantom
+		self.phantomButton.grid(row = 3, column = 2)
+
 		self.submitButton = ttk.Button(self.table, text = "SUBMIT")
 		self.submitButton["command"] = self.submitReq
 		self.submitButton.grid(row = 3, column = 3)
@@ -93,7 +97,7 @@ class Application(tk.Frame):
 			("Width of phantom", 40),			
 			("Thickness of shell", 5),
 			("Attenuation of shell", 1),
-			("Attenuation of cavity", 0),
+			("Attenuation of cavity", 0.5),
 		]
 
 		rowcount = 0		
@@ -169,13 +173,16 @@ class Application(tk.Frame):
 		self.saveXraySettings()
 		self.savePhantomSettings()
 
-	def submitReq(self):
+	def generatePhantom(self):
 		self.autoSave()
-
 		phantom = self.phantomGenerator.create_phantom(
 			self.cbct_obj.detectorRows,
 			self.cbct_obj.detectorColumns)
 		pm.get_phantom_jpg(phantom)
+		return phantom
+
+	def submitReq(self):
+		phantom = self.generatePhantom()
 		self.cbct_obj.start_run(phantom)
 		print("Run complete.")
 
@@ -183,7 +190,7 @@ class Application(tk.Frame):
 		for parameter in parameters:
 			self.entries[parameter[0]].delete(0, 'end')
 			self.entries[parameter[0]].insert(0, parameter[1])
-		print("Reset Xray settings")
+		print("Reset settings")
 
 	def formatGUI(self):
 
