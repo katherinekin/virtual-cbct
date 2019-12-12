@@ -132,7 +132,7 @@ class Application(tk.Frame):
 		for entry in self.entries:
 			if "source" in entry:
 				self.cbct_obj.distanceFromSourceToOrigin = int(self.entries[entry].get())
-			elif "distance" in entry and "detector" in entry:
+			elif "Distance" in entry and "detector" in entry:
 				self.cbct_obj.distanceFromOriginToDetector = int(self.entries[entry].get())
 			elif "pixel" in entry:
 				correctedString = self.stringWithoutExtraDecimals(self.entries[entry].get())
@@ -175,15 +175,22 @@ class Application(tk.Frame):
 
 	def generatePhantom(self):
 		self.autoSave()
-		phantom = self.phantomGenerator.create_phantom(
-			self.cbct_obj.detectorRows,
-			self.cbct_obj.detectorColumns)
+		# phantom = self.phantomGenerator.create_phantom(
+		# 	self.cbct_obj.detectorRows,
+		# 	self.cbct_obj.detectorColumns)
+		phantom = self.phantomGenerator.create_phantom()
 		pm.get_phantom_jpg(phantom)
 		return phantom
 
 	def submitReq(self):
 		phantom = self.generatePhantom()
-		self.cbct_obj.start_run(phantom)
+		self.cbct_obj.start_run(
+			self.phantomGenerator.phantom_on_detector(
+				phantom,
+				self.cbct_obj.detectorRows, 
+				self.cbct_obj.detectorColumns
+				)
+			)
 		print("Run complete.")
 
 	def reset(self, parameters):

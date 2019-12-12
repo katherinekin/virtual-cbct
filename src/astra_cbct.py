@@ -14,7 +14,7 @@ class Virtual_Cbct():
 	def __init__(self):
 		# Configuration.
 		self.distanceFromSourceToOrigin = 300  # [mm]
-		self.distanceFromOriginToDetector = 100  # [mm]
+		self.distanceFromOriginToDetector = 10  # [mm]
 		self.pixelSize = 1.05  # [mm]
 		self.detectorRows = 200  # Vertical size of detector [pixels].
 		self.detectorColumns = 200  # Horizontal size of detector [pixels].
@@ -39,9 +39,7 @@ class Virtual_Cbct():
 		self.create_reconstructions()
 	
 	def create_projections(self):
-		# Create projections. With increasing angles, the projection are such that the
-		# object is rotated clockwise. Slice zero is at the top of the object. The
-		# projection from angle zero looks upwards from the bottom of the slice.
+		# Projections are created as if phantom is rotated clockwise. 
 		phantomId = astra.data3d.create('-vol', self.vol_geom, data = self.phantom)
 		
 		projectionId, projections = astra.creators.create_sino3d_gpu(
